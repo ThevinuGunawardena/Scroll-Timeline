@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll Responsive Video</title>
+  <style>
+    /* Basic Reset */
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #video-section {
+      height: 200vh; /* Double viewport height for smooth scroll experience */
+      background: #000;
+    }
+
+    #scroll-video-container {
+      position: sticky;
+      top: 0;
+      height: 100vh; /* Locks video container to viewport height */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #scroll-video {
+      width: 100%;
+      height: auto;
+    }
+
+    #next-section {
+      background: #f4f4f4;
+      font-size: 2rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Video Section -->
+  <section id="video-section">
+    <div id="scroll-video-container">
+      <video id="scroll-video" muted playsinline>
+        <source src="vid.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </section>
+
+  <!-- Next Section -->
+  <section id="next-section">
+    <p>Welcome to the next section!</p>
+  </section>
+
+  <script>
+    const video = document.getElementById("scroll-video");
+    const videoSection = document.getElementById("video-section");
+
+    // Prevent scrolling beyond the video section until video ends
+    let isVideoCompleted = false;
+
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY; // How much the page has been scrolled
+      const sectionHeight = videoSection.offsetHeight; // Total height of video section
+      const viewportHeight = window.innerHeight; // Viewport height
+      const maxScroll = sectionHeight - viewportHeight; // Max scrollable height in video section
+
+      if (!isVideoCompleted) {
+        // Calculate the scroll progress within the video section
+        const scrollFraction = Math.min(scrollTop / maxScroll, 1);
+
+        // Sync video playback with scroll position
+        video.currentTime = scrollFraction * video.duration;
+
+        // Check if the video has been fully scrolled through
+        if (scrollFraction >= 1) {
+          isVideoCompleted = true; // Allow scrolling beyond the video section
+        } else {
+          // Lock scrolling within the video section
+          window.scrollTo(0, scrollTop);
+        }
+      }
+    });
+
+    // Unlock scrolling when the user manually completes the video
+    video.addEventListener("ended", () => {
+      isVideoCompleted = true;
+    });
+  </script>
+</body>
+</html>
